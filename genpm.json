@@ -1,0 +1,36 @@
+{
+  "$": 1,
+  "n": "@core/site",
+  "v": "1.0.0",
+  "s": {
+    "en": "Site settings, editable nested menus and managed redirects with loop and open-redirect protection",
+    "es": "Ajustes del sitio, menús anidados editables y redirecciones gestionables sin bucles ni open redirect",
+    "pt-BR": "Configurações do site, menus aninhados editáveis e redirecionamentos sem loops nem open redirect",
+    "fr": "Réglages du site, menus imbriqués modifiables et redirections gérées sans boucles ni open redirect",
+    "de": "Website-Einstellungen, bearbeitbare verschachtelte Menüs und Weiterleitungen ohne Schleifen und Open Redirects",
+    "ja": "サイト設定、編集可能な入れ子メニュー、ループとオープンリダイレクトを防ぐリダイレクト管理",
+    "zh-CN": "站点设置、可编辑的多级菜单，以及防循环和开放重定向的重定向管理",
+    "ko": "사이트 설정, 편집 가능한 중첩 메뉴, 루프와 오픈 리다이렉트를 막는 리다이렉트 관리"
+  },
+  "d": "src/lib/site",
+  "l": "MIT",
+  "k": [
+    "cms",
+    "menus",
+    "redirects",
+    "settings",
+    "navigation"
+  ],
+  "g": {
+    "@core/db": "^1.0.0",
+    "@core/content": "^1.0.0",
+    "@core/contracts": "^1.0.0"
+  },
+  "p": {
+    "zod": "^4.0.0"
+  },
+  "e": [
+    "SITE_URL",
+    "SITE_REDIRECT_HOSTS"
+  ]
+}
