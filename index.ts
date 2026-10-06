@@ -19,6 +19,7 @@ export {
   type RedirectStatus,
   redirectResponse,
   resolveRedirect,
+  updateRedirect,
   upsertRedirect,
 } from './redirects.ts';
 export { type Redirect, redirects } from './schema.ts';

@@ -19,6 +19,7 @@ import {
   redirectResponse,
   resolveRedirect,
   SiteError,
+  redirectsAdminResource,
   siteAdminResources,
   upsertRedirect,
 } from './index.ts';
@@ -126,5 +127,25 @@ describe('admin resources', () => {
     expect(await code(redirectsRes!.create!({ from: '/z', to: '/y' }, ctx([])))).toBe('forbidden');
     await redirectsRes!.delete!(r.id, admin);
     expect(await redirectsRes!.get(r.id, admin)).toBeNull();
+  });
+
+  it('editing a redirect updates that row by id and never overwrites another one', async () => {
+    const redirectsRes = redirectsAdminResource;
+    const admin: AdminContext = { user: { id: 'usr_1', email: null, name: null }, can: async () => true };
+    const a = await redirectsRes.create!({ from: '/a', to: '/x' }, admin);
+    const b = await redirectsRes.create!({ from: '/b', to: '/y' }, admin);
+    const moved = await redirectsRes.update!(a.id, { from: '/a2', to: '/x', status: '302' }, admin);
+    expect(moved).toMatchObject({ id: a.id, fromPath: '/a2', status: 302 });
+    expect((await redirectsRes.list({ page: 1, pageSize: 10 }, admin)).rows.map((r) => r.fromPath)).toEqual(['/a2', '/b']);
+    expect(await resolveRedirect('/a')).toBeNull();
+    expect(await resolveRedirect('/a2')).toEqual({ to: '/x', status: 302 });
+    // `from` de otra redirección: error (422 en el panel), sin tocar ninguna.
+    expect(await code(redirectsRes.update!(a.id, { from: '/b', to: '/z' }, admin))).toBe('invalid_path');
+    expect((await redirectsRes.get(b.id, admin))?.to).toBe('/y');
+    expect((await redirectsRes.get(a.id, admin))?.fromPath).toBe('/a2');
+    // Bucles: se comprueban sin contar el `from` anterior de la propia fila.
+    expect(await code(redirectsRes.update!(a.id, { from: '/y', to: '/b' }, admin))).toBe('redirect_loop');
+    expect((await redirectsRes.update!(b.id, { from: '/b', to: '/a2' }, admin)).to).toBe('/a2');
+    expect(await code(redirectsRes.update!('red_missing', { from: '/q', to: '/r' }, admin))).toBe('not_found');
   });
 });

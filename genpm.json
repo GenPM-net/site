@@ -1,7 +1,7 @@
 {
   "$": 1,
   "n": "@core/site",
-  "v": "1.0.0",
+  "v": "1.1.0",
   "s": {
     "en": "Site settings, editable nested menus and managed redirects with loop and open-redirect protection",
     "es": "Ajustes del sitio, menús anidados editables y redirecciones gestionables sin bucles ni open redirect",

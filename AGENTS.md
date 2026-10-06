@@ -7,7 +7,7 @@ from the admin with loop detection, safe targets (site paths or https to allowed
 No page content, no SEO tags (@core/seo reads these settings).
 
 ## Map
-- `index.ts` — public API: `getSiteSettings`, `getMenu`, `upsertRedirect`, `resolveRedirect`, `redirectResponse`, `siteAdminResources`.
+- `index.ts` — public API: `getSiteSettings`, `getMenu`, `upsertRedirect` (by `from`), `updateRedirect` (by id), `resolveRedirect`, `redirectResponse`, `siteAdminResources`.
 - `content.ts` — `siteSettings`, `menus` and their schemas. `redirects.ts` — redirect logic. `links.ts` — link validation.
 - `adapters/hono.ts` — `redirectMiddleware`. `adapters/next.ts` — `redirectFor(req)`.
 
@@ -27,5 +27,5 @@ No page content, no SEO tags (@core/seo reads these settings).
 
 ## Don't
 - Don't hardcode the site name, logo or menus in components once this module is installed.
-- Don't build redirects from user input; only from the admin through `upsertRedirect`.
+- Don't build redirects from user input; only from the admin through `upsertRedirect` / `updateRedirect`. Editing changes that row by id and fails with `invalid_path` (422) if the new `from` belongs to another redirect.
 - Don't put legal text here; only the paths of the legal pages.

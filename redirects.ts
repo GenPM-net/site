@@ -1,5 +1,5 @@
 // Redirecciones gestionables desde el panel, con detección de bucles y caché en memoria para el middleware.
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, ne, sql } from 'drizzle-orm';
 import { type Executor, getDb } from '../db/index.ts';
 import { allowedHosts, assertRedirectTarget, normalizePath, SiteError } from './links.ts';
 import { type Redirect, redirects } from './schema.ts';
@@ -14,9 +14,11 @@ export const invalidateRedirectCache = () => {
   cache = null;
 };
 
-async function assertNoLoop(from: string, to: string, db: Executor): Promise<void> {
+/** `exceptId`: la redirección que se está editando (su `from` anterior deja de contar). */
+async function assertNoLoop(from: string, to: string, db: Executor, exceptId?: string): Promise<void> {
   if (!to.startsWith('/')) return;
-  const all = new Map((await db.select().from(redirects)).map((r) => [r.fromPath, r.to]));
+  const rows = await db.select().from(redirects);
+  const all = new Map(rows.filter((r) => r.id !== exceptId).map((r) => [r.fromPath, r.to]));
   all.set(from, to);
   let current: string | undefined = from;
   for (let i = 0; i < 20 && current; i++) {
@@ -43,6 +45,34 @@ export async function upsertRedirect(
     .returning();
   invalidateRedirectCache();
   return row!;
+}
+
+/**
+ * Edita la redirección `id` (puede cambiar también su `from`). Si el nuevo `from` ya es de otra redirección, falla con
+ * `invalid_path` en vez de pisarla.
+ */
+export async function updateRedirect(
+  id: string,
+  input: { from: string; to: string; status?: RedirectStatus },
+  db: Executor = getDb(),
+): Promise<Redirect> {
+  const fromPath = normalizePath(input.from);
+  const to = assertRedirectTarget(input.to, allowedHosts());
+  const status = input.status ?? 301;
+  if (!REDIRECT_STATUSES.includes(status)) throw new SiteError('invalid_link', `invalid status ${status}`);
+  const [taken] = await db.select({ id: redirects.id }).from(redirects).where(and(eq(redirects.fromPath, fromPath), ne(redirects.id, id)));
+  if (taken) throw new SiteError('invalid_path', `a redirect from ${fromPath} already exists`);
+  await assertNoLoop(fromPath, to, db, id);
+  let row: Redirect | undefined;
+  try {
+    [row] = await db.update(redirects).set({ fromPath, to, status }).where(eq(redirects.id, id)).returning();
+  } catch {
+    // Carrera con otra edición que acaba de ocupar ese `from` (índice único).
+    throw new SiteError('invalid_path', `a redirect from ${fromPath} already exists`);
+  }
+  if (!row) throw new SiteError('not_found', `redirect ${id} not found`);
+  invalidateRedirectCache();
+  return row;
 }
 
 export async function deleteRedirect(id: string, db: Executor = getDb()): Promise<void> {

@@ -5,7 +5,7 @@ import { contentAdminResource } from '../content/index.ts';
 import type { AdminContext, AdminResource } from '../contracts/index.ts';
 import { getDb } from '../db/index.ts';
 import { SiteError } from './links.ts';
-import { deleteRedirect, REDIRECT_STATUSES, upsertRedirect } from './redirects.ts';
+import { deleteRedirect, REDIRECT_STATUSES, updateRedirect, upsertRedirect } from './redirects.ts';
 import { type Redirect, redirects } from './schema.ts';
 
 const RedirectInput = z.object({
@@ -46,9 +46,9 @@ export const redirectsAdminResource: AdminResource<Redirect> = {
     await need(ctx, 'create');
     return upsertRedirect(RedirectInput.parse(input));
   },
-  async update(_id, input, ctx) {
+  async update(id, input, ctx) {
     await need(ctx, 'update');
-    return upsertRedirect(RedirectInput.parse(input));
+    return updateRedirect(id, RedirectInput.parse(input));
   },
   async delete(id, ctx) {
     await need(ctx, 'delete');
