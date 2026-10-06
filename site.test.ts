@@ -1,13 +1,13 @@
 import { Hono } from 'hono';
 import { beforeEach, describe, expect, it } from 'vitest';
-import * as contentSchema from '../content/schema.js';
-import { createEntry, publish, saveDraft, seedEntry } from '../content/index.js';
-import type { AdminContext } from '../contracts/index.js';
-import { testDb } from '../db/__fixtures__/pglite.js';
-import * as jobsSchema from '../jobs/schema.js';
-import { redirectMiddleware } from './adapters/hono.js';
-import { redirectFor } from './adapters/next.js';
-import * as schema from './schema.js';
+import * as contentSchema from '../content/schema.ts';
+import { createEntry, publish, saveDraft, seedEntry } from '../content/index.ts';
+import type { AdminContext } from '../contracts/index.ts';
+import { testDb } from '../db/__fixtures__/pglite.ts';
+import * as jobsSchema from '../jobs/schema.ts';
+import { redirectMiddleware } from './adapters/hono.ts';
+import { redirectFor } from './adapters/next.ts';
+import * as schema from './schema.ts';
 import {
   assertRedirectTarget,
   deleteRedirect,
@@ -21,7 +21,7 @@ import {
   SiteError,
   siteAdminResources,
   upsertRedirect,
-} from './index.js';
+} from './index.ts';
 
 beforeEach(async () => {
   await testDb(contentSchema, jobsSchema, schema);

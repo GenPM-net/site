@@ -1,6 +1,6 @@
 // Tablas de @core/site. Ajustes y menús son contenido (@core/content); aquí solo las redirecciones.
 import { integer, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
-import { primaryId, timestamps } from '../db/index.js';
+import { primaryId, timestamps } from '../db/index.ts';
 
 export const redirects = pgTable('redirects', {
   id: primaryId('rdr'),

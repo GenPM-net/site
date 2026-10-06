@@ -1,12 +1,12 @@
 // Recursos de panel: ajustes y menús (vía @core/content) y redirecciones.
 import { asc, count, eq, ilike, or } from 'drizzle-orm';
 import { z } from 'zod';
-import { contentAdminResource } from '../content/index.js';
-import type { AdminContext, AdminResource } from '../contracts/index.js';
-import { getDb } from '../db/index.js';
-import { SiteError } from './links.js';
-import { deleteRedirect, REDIRECT_STATUSES, upsertRedirect } from './redirects.js';
-import { type Redirect, redirects } from './schema.js';
+import { contentAdminResource } from '../content/index.ts';
+import type { AdminContext, AdminResource } from '../contracts/index.ts';
+import { getDb } from '../db/index.ts';
+import { SiteError } from './links.ts';
+import { deleteRedirect, REDIRECT_STATUSES, upsertRedirect } from './redirects.ts';
+import { type Redirect, redirects } from './schema.ts';
 
 const RedirectInput = z.object({
   from: z.string(),

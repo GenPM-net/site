@@ -1,5 +1,5 @@
 // @core/site — API pública. Importa desde aquí; middleware de redirecciones en adapters/.
-export { redirectsAdminResource, siteAdminResources } from './admin.js';
+export { redirectsAdminResource, siteAdminResources } from './admin.ts';
 export {
   getMenu,
   getSiteSettings,
@@ -10,8 +10,8 @@ export {
   SiteSettingsSchema,
   SocialPlatforms,
   siteSettings,
-} from './content.js';
-export { allowedHosts, assertRedirectTarget, isSafeLink, normalizePath, SiteError } from './links.js';
+} from './content.ts';
+export { allowedHosts, assertRedirectTarget, isSafeLink, normalizePath, SiteError } from './links.ts';
 export {
   deleteRedirect,
   invalidateRedirectCache,
@@ -20,5 +20,5 @@ export {
   redirectResponse,
   resolveRedirect,
   upsertRedirect,
-} from './redirects.js';
-export { type Redirect, redirects } from './schema.js';
+} from './redirects.ts';
+export { type Redirect, redirects } from './schema.ts';

@@ -1,8 +1,8 @@
 // Ajustes del sitio (singleton) y menús (colección; el slug es la ubicación: header, footer…) sobre @core/content.
 import { z } from 'zod';
-import type { AdminField } from '../contracts/index.js';
-import { defineCollection, defineSingleton, getEntry, getSingleton } from '../content/index.js';
-import { isSafeLink } from './links.js';
+import type { AdminField } from '../contracts/index.ts';
+import { defineCollection, defineSingleton, getEntry, getSingleton } from '../content/index.ts';
+import { isSafeLink } from './links.ts';
 
 const Link = z.string().max(500).refine(isSafeLink, 'Use a site path (/about), an https:// URL, mailto: or tel:');
 

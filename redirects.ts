@@ -1,8 +1,8 @@
 // Redirecciones gestionables desde el panel, con detección de bucles y caché en memoria para el middleware.
 import { eq, sql } from 'drizzle-orm';
-import { type Executor, getDb } from '../db/index.js';
-import { allowedHosts, assertRedirectTarget, normalizePath, SiteError } from './links.js';
-import { type Redirect, redirects } from './schema.js';
+import { type Executor, getDb } from '../db/index.ts';
+import { allowedHosts, assertRedirectTarget, normalizePath, SiteError } from './links.ts';
+import { type Redirect, redirects } from './schema.ts';
 
 export const REDIRECT_STATUSES = [301, 302, 307, 308] as const;
 export type RedirectStatus = (typeof REDIRECT_STATUSES)[number];

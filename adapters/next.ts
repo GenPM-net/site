@@ -3,7 +3,7 @@
 //   export async function middleware(req: Request) { return (await redirectFor(req)) ?? undefined; }
 //   export const config = { runtime: 'nodejs', matcher: ['/((?!_next|api|favicon.ico).*)'] };
 // Sin middleware Node: llama a `redirectFor` desde `app/not-found.tsx` o desde un catch-all antes del 404.
-import { redirectResponse } from '../index.js';
+import { redirectResponse } from '../index.ts';
 
 export async function redirectFor(req: Request): Promise<Response | null> {
   if (req.method !== 'GET' && req.method !== 'HEAD') return null;
