@@ -8,11 +8,17 @@ import { SiteError } from './links.ts';
 import { deleteRedirect, REDIRECT_STATUSES, updateRedirect, upsertRedirect } from './redirects.ts';
 import { type Redirect, redirects } from './schema.ts';
 
-const RedirectInput = z.object({
-  from: z.string(),
-  to: z.string(),
-  status: z.coerce.number().pipe(z.union(REDIRECT_STATUSES.map((s) => z.literal(s)) as [z.ZodLiteral<301>, z.ZodLiteral<302>, z.ZodLiteral<307>, z.ZodLiteral<308>])).optional(),
-});
+// El panel envía los campos por su `name` (`fromPath`, como la columna); `from` se sigue aceptando por compatibilidad.
+const RedirectInput = z
+  .preprocess(
+    (v) => (v && typeof v === 'object' && !('fromPath' in v) && 'from' in v ? { ...v, fromPath: (v as { from: unknown }).from } : v),
+    z.object({
+      fromPath: z.string(),
+      to: z.string(),
+      status: z.coerce.number().pipe(z.union(REDIRECT_STATUSES.map((s) => z.literal(s)) as [z.ZodLiteral<301>, z.ZodLiteral<302>, z.ZodLiteral<307>, z.ZodLiteral<308>])).optional(),
+    }),
+  )
+  .transform(({ fromPath, ...rest }) => ({ from: fromPath, ...rest }));
 
 async function need(ctx: AdminContext, action: string) {
   if (!(await ctx.can(`redirects:${action}`))) throw new SiteError('forbidden', `forbidden: redirects:${action}`);

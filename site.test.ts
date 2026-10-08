@@ -121,7 +121,11 @@ describe('admin resources', () => {
     expect([settings!.name, menusRes!.name, redirectsRes!.name]).toEqual(['site_settings', 'menus', 'redirects']);
     const ctx = (perms: string[]): AdminContext => ({ user: { id: 'usr_1', email: null, name: null }, can: async (p) => perms.includes(p) });
     const admin = ctx(['redirects:read', 'redirects:create', 'redirects:delete']);
-    const r = await redirectsRes!.create!({ from: '/x', to: '/y', status: '302' }, admin);
+    // El panel envía los nombres de los campos (`fromPath`); `from` sigue funcionando.
+    const r = await redirectsRes!.create!({ fromPath: '/x', to: '/y', status: '302' }, admin);
+    expect(redirectsRes!.fields.map((f) => f.name)).toContain('fromPath');
+    expect(redirectsRes!.input!.safeParse({ fromPath: '/p', to: '/q' }).success).toBe(true);
+    expect((redirectsRes!.input!.safeParse({ to: '/q' }).error?.issues[0]?.path ?? [])[0]).toBe('fromPath');
     expect(r.status).toBe(302);
     expect((await redirectsRes!.list({ page: 1, pageSize: 10, search: '/x' }, admin)).total).toBe(1);
     expect(await code(redirectsRes!.create!({ from: '/z', to: '/y' }, ctx([])))).toBe('forbidden');
