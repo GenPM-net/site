@@ -23,6 +23,26 @@ editable menus up to 3 levels as a content collection (slug = location: `header`
 from the admin with loop detection, safe targets (site paths or https to allowed hosts) and hit counters.
 No page content, no SEO tags (@core/seo reads these settings).
 
+## Setup
+
+After `genpm add`, follow these steps (your AI agent finds the same steps in `src/lib/site/AGENTS.md` and can do them for you):
+
+1. Env: `SITE_URL` (`https://example.com`), optional `SITE_REDIRECT_HOSTS` (comma-separated external hosts allowed as redirect targets). Migrations as in `src/lib/db/AGENTS.md`.
+2. Import this module once at startup (it registers the `site_settings` and `menus` content definitions).
+3. Seed initial values with `seedEntry` (@core/content): settings and the `header`/`footer` menus, using the site's current ones.
+4. Render: `const settings = await getSiteSettings({ locale })`, `const items = await getMenu('header', { locale })`.
+5. Redirects: Hono `app.use(redirectMiddleware)`; Next.js `middleware.ts` with `runtime: 'nodejs'` calling `redirectFor(req)`.
+6. Add `...siteAdminResources()` to `src/genpm/admin.ts`.
+7. Verify: create a redirect `/old → /new` and request `/old` (301 to `/new`).
+
+## What's inside
+
+Paths are relative to `src/lib/site`.
+
+- `index.ts` — public API: `getSiteSettings`, `getMenu`, `upsertRedirect` (by `from`), `updateRedirect` (by id), `resolveRedirect`, `redirectResponse`, `siteAdminResources`.
+- `content.ts` — `siteSettings`, `menus` and their schemas. `redirects.ts` — redirect logic. `links.ts` — link validation.
+- `adapters/hono.ts` — `redirectMiddleware`. `adapters/next.ts` — `redirectFor(req)`.
+
 ## At a glance
 
 - **GenPM dependencies** (installed with it): [@core/db](https://genpm.net/p/@core/db), [@core/content](https://genpm.net/p/@core/content), [@core/contracts](https://genpm.net/p/@core/contracts)
